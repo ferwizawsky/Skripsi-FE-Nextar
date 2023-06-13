@@ -1,0 +1,24 @@
+{
+  "name": "frostberryl",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "pinia": "^2.0.34",
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.13",
+    "vue3-editor": "^0.1.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.0",
+    "autoprefixer": "^10.4.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.23",
+    "vite": "^2.9.0"
+  }
+}
