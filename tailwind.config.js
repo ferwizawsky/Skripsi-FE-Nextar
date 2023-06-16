@@ -4,7 +4,7 @@ module.exports = {
     extend: {
       colors: {
         transparent: "transparent",
-        primary: "#444",
+        primary: "#EA4375",
         current: "currentColor",
         white: "#ffffff",
         berryl: "#EA4375",

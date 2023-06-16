@@ -1,32 +1,45 @@
 <script setup>
 import axios from "axios";
-import { onMounted, ref } from "vue";
-import SideBar from "../components/SideBar.vue";
+import { onMounted, ref, watch } from "vue";
 
 const log_ = ref("");
 const preview = ref();
+const result = ref([]);
+// const
 const forme = ref({
-  url: "http://127.0.0.1:5000/predict",
+  url: "http://127.0.0.1:5000/",
   image: "",
 });
 function loge(e) {
   log_.value = log_.value + "<br />" + e;
 }
 
+watch(
+  () => forme.value.url,
+  (e) => {
+    localStorage.setItem("url", e);
+  }
+);
+onMounted(() => {
+  forme.value.url = localStorage.getItem("url");
+});
 async function postImg() {
-  loge("Loading......");
+  // loge("Loading......");
+  log_.value = "";
+  result.value = [];
   try {
-    const { data } = await axios.post(forme.value.url, {
+    const { data } = await axios.post(`${forme.value.url}predict`, {
       image: forme.value.image,
     });
-    loge("Success......");
-    let tmp0 = data.predictions[0];
-    let tmp1 = data.predictions[1];
-    if (tmp0.confidence > tmp1.confidence) {
-      loge(`${tmp0.label} with Confidence ${tmp0.confidence}`);
-    } else {
-      loge(`${tmp1.label} with Confidence ${tmp1.confidence}`);
-    }
+    // loge("Success......");
+    // let tmp0 = data.predictions[0];
+    // let tmp1 = data.predictions[1];
+    // if (tmp0.confidence > tmp1.confidence) {
+    //   loge(`${tmp0.label} with Confidence ${tmp0.confidence}`);
+    // } else {
+    //   loge(`${tmp1.label} with Confidence ${tmp1.confidence}`);
+    // }
+    result.value = data.predictions;
   } catch (e) {
     console.log(e);
     loge("Error Response......");
@@ -45,9 +58,6 @@ function encodeImageFileAsURL(e) {
   };
   reader.readAsDataURL(file);
 }
-onMounted(() => {
-  // getExam();
-});
 </script>
 <template>
   <div>
@@ -64,7 +74,8 @@ onMounted(() => {
         </div>
         <div class="inputan">
           <span>Input Gambar</span>
-          <input type="file" @change="encodeImageFileAsURL" required />
+          <!-- <input type="text" v-model="forme.image" /> -->
+          <input type="file" @change="encodeImageFileAsURL" />
         </div>
         <div class="px-4 mb-5" v-if="preview">
           <img :src="preview" class="w-full" />
@@ -74,8 +85,25 @@ onMounted(() => {
         </div>
       </form>
       <div class="pt-10">
-        Log :
-        <div class="pt-4" v-html="log_"></div>
+        Result :
+        <div v-if="log_" class="pt-4" v-html="log_"></div>
+        <!-- <div v-if="log_">{{ log_ }}</div> -->
+        <div v-for="index in result" class="mb-7">
+          <div class="flex items-center">
+            <div class="grow">{{ index.label }}</div>
+            <div class="px-4 flex-none">
+              {{ index.confidence }}
+            </div>
+          </div>
+          <div class="bg-gray-200 rounded-lg">
+            <div
+              :style="{
+                width: 100 * index.confidence + '%',
+              }"
+              class="h-[10px] bg-primary rounded-lg mt-2"
+            ></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
