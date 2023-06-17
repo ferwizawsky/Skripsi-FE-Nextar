@@ -1,11 +1,22 @@
 <script setup>
 import axios from "axios";
 import { onMounted, ref, watch } from "vue";
+import Camera from "simple-vue-camera";
 
 const log_ = ref("");
 const preview = ref();
 const result = ref([]);
-// const
+const camera = ref();
+// Use camera reference to call functions
+const snapshot = async () => {
+  const blob = await camera.value?.snapshot();
+
+  // To show the screenshot with an image tag, create a url
+  const url = URL.createObjectURL(blob);
+  preview.value = url;
+  encodeBase(blob);
+};
+
 const forme = ref({
   url: "http://127.0.0.1:5000/",
   image: "",
@@ -45,6 +56,15 @@ async function postImg() {
     loge("Error Response......");
   }
 }
+function encodeBase(file) {
+  preview.value = URL.createObjectURL(file);
+  let reader = new FileReader();
+  reader.onloadend = function () {
+    // console.log("RESULT", reader.result);
+    forme.value.image = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
 function encodeImageFileAsURL(e) {
   let file = e.target.files[0];
   // console.log(e);
@@ -72,12 +92,38 @@ function encodeImageFileAsURL(e) {
           <span>Url</span>
           <input type="text" v-model="forme.url" required />
         </div>
-        <div class="inputan">
-          <span>Input Gambar</span>
-          <!-- <input type="text" v-model="forme.image" /> -->
+        <div>
+          <Camera
+            :resolution="{ width: 400, height: 250 }"
+            ref="camera"
+            autoplay
+          />
+          <!-- <span @click="snapshot()">Create snapshot</span> -->
+        </div>
+        <!-- <div class="inputan">
+          <span>Input Gambar</span> 
           <input type="file" @change="encodeImageFileAsURL" />
+        </div> -->
+        <div
+          @click="snapshot()"
+          class="text-primary mx-auto mt-3 mb-6 bg-primary/20 p-2 w-9 rounded-full h-9 cursor-pointer hover:bg-primary/60 ease-in-out duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15M9 12l3 3m0 0l3-3m-3 3V2.25"
+            />
+          </svg>
         </div>
         <div class="px-4 mb-5" v-if="preview">
+          Preview Captured Image:
           <img :src="preview" class="w-full" />
         </div>
         <div class="text-center">
