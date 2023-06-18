@@ -135,7 +135,7 @@ function encodeImageFileAsURL(e) {
           <input type="file" @change="encodeImageFileAsURL" />
         </div> -->
 
-        <div class="px-4 my-5 relative" v-if="preview">
+        <div class="px-4 my-5 fixed top-10 right-3" v-if="preview">
           Preview Captured Image:
           <img :src="preview" class="w-full rounded-xl" />
           <div
